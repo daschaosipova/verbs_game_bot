@@ -40,6 +40,10 @@ def reply_with_dialogflow(event, vk_api, session_client, project_id):
             session_client, project_id, session_id, event.text
         )
 
+        if query_result.intent.is_fallback:
+            logger.info(f"Фраза не распознана (is_fallback). Бот молчит, уступая оператору.")
+            return
+        
         vk_api.messages.send(
             user_id=event.user_id,
             message=query_result.fulfillment_text,
