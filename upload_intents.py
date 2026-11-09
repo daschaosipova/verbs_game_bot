@@ -1,8 +1,15 @@
 import json
+import logging
 import os
 
 from dotenv import load_dotenv
 from google.cloud import dialogflow_v2 as dialogflow
+
+logging.basicConfig(
+    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
+    level=logging.INFO,
+)
+logger = logging.getLogger(__name__)
 
 
 def create_intent(project_id, display_name, training_phrases_parts, message_texts):
@@ -31,7 +38,7 @@ def create_intent(project_id, display_name, training_phrases_parts, message_text
         request={"parent": parent, "intent": intent}
     )
 
-    print(f'Интент "{response.display_name}" успешно создан.')
+    logger.info(f'Интент "{response.display_name}" успешно создан.')
 
 
 def main():
@@ -39,7 +46,7 @@ def main():
     project_id = os.getenv("PROJECT_ID")
 
     if not project_id:
-        print("Ошибка: PROJECT_ID не найден в файле .env")
+        logger.error("Ошибка: PROJECT_ID не найден в файле .env")
         return
 
     file_path = "questions.json"
