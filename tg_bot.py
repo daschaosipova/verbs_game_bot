@@ -60,7 +60,7 @@ def reply_with_dialogflow(update: Update, context: CallbackContext) -> None:
 
 def main() -> None:
     load_dotenv()
-    tg_token = os.getenv("TOKEN")
+    tg_token = os.getenv("TG_TOKEN")
     project_id = os.getenv("PROJECT_ID")
     dialogflow_client = dialogflow.SessionsClient()
     updater = Updater(tg_token, use_context=True)
