@@ -1,6 +1,7 @@
 import logging
 import os
 import random
+import time
 
 import vk_api as vk
 from dotenv import load_dotenv
@@ -8,10 +9,8 @@ from google.api_core.exceptions import GoogleAPICallError
 from google.cloud import dialogflow_v2 as dialogflow
 from vk_api.longpoll import VkEventType, VkLongPoll
 
-logging.basicConfig(
-    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
-    level=logging.INFO,
-)
+from tg_logs_handler import configure_logging
+
 logger = logging.getLogger(__name__)
 
 
@@ -59,6 +58,9 @@ def main() -> None:
     load_dotenv()
     vk_token = os.getenv("VK_TOKEN")
     project_id = os.getenv("PROJECT_ID")
+    tg_token = os.getenv("TG_TOKEN")
+    tg_chat_id = os.getenv("TG_CHAT_ID")
+    configure_logging(tg_token, tg_chat_id)
 
     dialogflow_client = dialogflow.SessionsClient()
 
@@ -68,17 +70,25 @@ def main() -> None:
 
     logger.info("VK-бот успешно запущен и слушает сервер...")
 
-    for event in longpoll.listen():
-        if event.type == VkEventType.MESSAGE_NEW:
-            if event.to_me:
-                logger.info(
-                    f"Новое сообщение для меня от {event.user_id}: {event.text}"
-                )
-                reply_with_dialogflow(event, vk_api, dialogflow_client, project_id)
-            else:
-                logger.info(
-                    f"Новое сообщение от меня для {event.user_id}: {event.text}"
-                )
+    while True:
+        try:
+            longpoll = VkLongPoll(vk_session)
+            for event in longpoll.listen():
+                if event.type == VkEventType.MESSAGE_NEW:
+                    if event.to_me:
+                        logger.info(
+                            f"Новое сообщение для меня от {event.user_id}: {event.text}"
+                        )
+                        reply_with_dialogflow(
+                            event, vk_api, dialogflow_client, project_id
+                        )
+                    else:
+                        logger.info(
+                            f"Новое сообщение от меня для {event.user_id}: {event.text}"
+                        )
+        except Exception:
+            logger.exception("VK-бот упал с ошибкой:")
+            time.sleep(5)
 
 
 if __name__ == "__main__":

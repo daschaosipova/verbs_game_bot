@@ -13,10 +13,8 @@ from telegram.ext import (
     Updater,
 )
 
-logging.basicConfig(
-    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
-    level=logging.INFO,
-)
+from tg_logs_handler import configure_logging
+
 logger = logging.getLogger(__name__)
 
 
@@ -58,10 +56,17 @@ def reply_with_dialogflow(update: Update, context: CallbackContext) -> None:
         logger.error(f"Ошибка при работе с Dialogflow API: {e}")
 
 
+def error_handler(update: object, context: CallbackContext) -> None:
+    """Логирует необработанные исключения и отправляет их в Telegram."""
+    logger.error("Произошла ошибка в TG-боте:", exc_info=context.error)
+
+
 def main() -> None:
     load_dotenv()
     tg_token = os.getenv("TG_TOKEN")
     project_id = os.getenv("PROJECT_ID")
+    tg_chat_id = os.getenv("TG_CHAT_ID")
+    configure_logging(tg_token, tg_chat_id)
     dialogflow_client = dialogflow.SessionsClient()
     updater = Updater(tg_token, use_context=True)
     dispatcher = updater.dispatcher
@@ -73,6 +78,7 @@ def main() -> None:
     dispatcher.add_handler(
         MessageHandler(Filters.text & ~Filters.command, reply_with_dialogflow)
     )
+    dispatcher.add_error_handler(error_handler)
 
     updater.start_polling()
 
