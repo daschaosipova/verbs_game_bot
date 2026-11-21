@@ -41,10 +41,10 @@ def reply_with_dialogflow(event, vk_api, session_client, project_id):
 
 def main() -> None:
     load_dotenv()
-    vk_token = os.getenv("VK_TOKEN")
-    project_id = os.getenv("PROJECT_ID")
-    tg_token = os.getenv("TG_TOKEN")
-    tg_chat_id = os.getenv("TG_CHAT_ID")
+    vk_token = os.environ["VK_TOKEN"]
+    project_id = os.environ["PROJECT_ID"]
+    tg_token = os.environ["TG_TOKEN"]
+    tg_chat_id = os.environ["TG_CHAT_ID"]
     configure_logging(tg_token, tg_chat_id)
 
     dialogflow_client = dialogflow.SessionsClient()

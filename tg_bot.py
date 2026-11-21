@@ -48,9 +48,9 @@ def error_handler(update: object, context: CallbackContext) -> None:
 
 def main() -> None:
     load_dotenv()
-    tg_token = os.getenv("TG_TOKEN")
-    project_id = os.getenv("PROJECT_ID")
-    tg_chat_id = os.getenv("TG_CHAT_ID")
+    tg_token = os.environ["TG_TOKEN"]
+    project_id = os.environ["PROJECT_ID"]
+    tg_chat_id = os.environ["TG_CHAT_ID"]
     configure_logging(tg_token, tg_chat_id)
     dialogflow_client = dialogflow.SessionsClient()
     updater = Updater(tg_token, use_context=True)

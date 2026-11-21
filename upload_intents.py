@@ -58,11 +58,7 @@ def main():
         level=logging.INFO,
     )
     load_dotenv()
-    project_id = os.getenv("PROJECT_ID")
-
-    if not project_id:
-        logger.error("Ошибка: PROJECT_ID не найден в файле .env")
-        return
+    project_id = os.environ["PROJECT_ID"]
 
     args = parse_args()
 
