@@ -59,18 +59,17 @@ def main() -> None:
         try:
             longpoll = VkLongPoll(vk_session)
             for event in longpoll.listen():
-                if event.type == VkEventType.MESSAGE_NEW:
-                    if event.to_me:
-                        logger.info(
-                            f"Новое сообщение для меня от {event.user_id}: {event.text}"
-                        )
-                        reply_with_dialogflow(
-                            event, vk_api, dialogflow_client, project_id
-                        )
-                    else:
-                        logger.info(
-                            f"Новое сообщение от меня для {event.user_id}: {event.text}"
-                        )
+                if event.type != VkEventType.MESSAGE_NEW:
+                    continue
+                if not event.to_me:
+                    logger.info(
+                        f"Новое сообщение от меня для {event.user_id}: {event.text}"
+                    )
+                    continue
+                logger.info(
+                    f"Новое сообщение для меня от {event.user_id}: {event.text}"
+                )
+                reply_with_dialogflow(event, vk_api, dialogflow_client, project_id)
         except Exception:
             logger.exception("VK-бот упал с ошибкой:")
             time.sleep(5)
