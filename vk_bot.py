@@ -9,25 +9,10 @@ from google.api_core.exceptions import GoogleAPICallError
 from google.cloud import dialogflow_v2 as dialogflow
 from vk_api.longpoll import VkEventType, VkLongPoll
 
+from dialogflow_api import detect_intent_text
 from tg_logs_handler import configure_logging
 
 logger = logging.getLogger(__name__)
-
-
-def detect_intent_text(
-    session_client, project_id, session_id, text, language_code="ru"
-):
-    """Отправляет текст в Dialogflow и возвращает ответ."""
-    session = session_client.session_path(project_id, session_id)
-
-    text_input = dialogflow.TextInput(text=text, language_code=language_code)
-    query_input = dialogflow.QueryInput(text=text_input)
-
-    response = session_client.detect_intent(
-        request={"session": session, "query_input": query_input}
-    )
-
-    return response.query_result
 
 
 def reply_with_dialogflow(event, vk_api, session_client, project_id):

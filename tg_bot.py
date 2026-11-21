@@ -13,6 +13,7 @@ from telegram.ext import (
     Updater,
 )
 
+from dialogflow_api import detect_intent_text
 from tg_logs_handler import configure_logging
 
 logger = logging.getLogger(__name__)
@@ -21,22 +22,6 @@ logger = logging.getLogger(__name__)
 def start(update: Update, context: CallbackContext) -> None:
     """Отправляет 'Здравствуйте' при команде /start."""
     update.message.reply_text("Здравствуйте")
-
-
-def detect_intent_text(
-    session_client, project_id, session_id, text, language_code="ru"
-):
-    """Отправляет текст в Dialogflow и возвращает ответ."""
-    session = session_client.session_path(project_id, session_id)
-
-    text_input = dialogflow.TextInput(text=text, language_code=language_code)
-    query_input = dialogflow.QueryInput(text=text_input)
-
-    response = session_client.detect_intent(
-        request={"session": session, "query_input": query_input}
-    )
-
-    return response.query_result
 
 
 def reply_with_dialogflow(update: Update, context: CallbackContext) -> None:
