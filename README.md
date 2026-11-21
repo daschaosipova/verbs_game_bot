@@ -35,6 +35,7 @@ TG_TOKEN=Ваш_токен_телеграм_бота
 VK_TOKEN=Ваш_токен_группы_вконтакте
 PROJECT_ID=ID_вашего_проекта_в_Google_Dialogflow
 TG_CHAT_ID=Ваш_Telegram_ID_для_получения_логов_об_ошибках
+QUESTIONS_FILE_PATH=questions.json  # опционально: путь к файлу с вопросами
 ```
 
 #### Настройка доступа к Google Dialogflow (Важно)
@@ -47,10 +48,23 @@ GOOGLE_APPLICATION_CREDENTIALS=path/to/your/google-credentials.json
 ### Как запустить
 
 #### 1. Обучение Dialogflow (Загрузка интентов)
-Перед запуском ботов необходимо загрузить базу вопросов и ответов в ваш агент Dialogflow. Убедитесь, что файл с вопросами лежит в корне под именем `questions.json`, и запустите скрипт:
+Перед запуском ботов необходимо загрузить базу вопросов и ответов в ваш агент Dialogflow. По умолчанию скрипт ищет файл `questions.json` в корне проекта:
 ```bash
 python upload_intents.py
 ```
+
+Путь к файлу можно переопределить без правки кода. За разбор настроек отвечает функция `parse_args()` в `upload_intents.py`:
+
+* через переменную окружения (в том числе в `.env`):
+  ```bash
+  QUESTIONS_FILE_PATH=path/to/your/questions.json python upload_intents.py
+  ```
+* аргументом командной строки:
+  ```bash
+  python upload_intents.py --questions-file path/to/your/questions.json
+  ```
+
+Аргумент командной строки имеет приоритет над `QUESTIONS_FILE_PATH`, а если не задан ни один из них, используется `questions.json`.
 
 #### 2. Запуск бота в Telegram
 ```bash

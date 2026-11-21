@@ -1,3 +1,4 @@
+import argparse
 import json
 import logging
 import os
@@ -5,11 +6,21 @@ import os
 from dotenv import load_dotenv
 from google.cloud import dialogflow_v2 as dialogflow
 
-logging.basicConfig(
-    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
-    level=logging.INFO,
-)
 logger = logging.getLogger(__name__)
+
+
+def parse_args():
+    """Возвращает аргументы командной строки."""
+    parser = argparse.ArgumentParser(
+        description="Загружает интенты в Dialogflow из JSON-файла."
+    )
+    parser.add_argument(
+        "--questions-file",
+        default=os.getenv("QUESTIONS_FILE_PATH", "questions.json"),
+        help="Путь к файлу с вопросами и ответами "
+        "(по умолчанию: questions.json или QUESTIONS_FILE_PATH из .env).",
+    )
+    return parser.parse_args()
 
 
 def create_intent(project_id, display_name, training_phrases_parts, message_texts):
@@ -42,6 +53,10 @@ def create_intent(project_id, display_name, training_phrases_parts, message_text
 
 
 def main():
+    logging.basicConfig(
+        format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
+        level=logging.INFO,
+    )
     load_dotenv()
     project_id = os.getenv("PROJECT_ID")
 
@@ -49,9 +64,9 @@ def main():
         logger.error("Ошибка: PROJECT_ID не найден в файле .env")
         return
 
-    file_path = "questions.json"
+    args = parse_args()
 
-    with open(file_path, "r", encoding="utf-8") as f:
+    with open(args.questions_file, "r", encoding="utf-8") as f:
         intents_data = json.load(f)
 
     for intent_name, data in intents_data.items():
