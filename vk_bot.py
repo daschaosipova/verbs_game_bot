@@ -17,7 +17,7 @@ logger = logging.getLogger(__name__)
 
 def reply_with_dialogflow(event, vk_api, session_client, project_id):
     """Получает ответ от DialogFlow и отправляет его пользователю в VK."""
-    session_id = f"vk_{event.user_id}"
+    session_id = f"vk-{event.user_id}"
 
     try:
         query_result = detect_intent_text(

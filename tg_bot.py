@@ -29,7 +29,7 @@ def reply_with_dialogflow(update: Update, context: CallbackContext) -> None:
     project_id = context.bot_data["project_id"]
     session_client = context.bot_data["session_client"]
 
-    session_id = f"tg_{update.message.chat_id}"
+    session_id = f"tg-{update.message.chat_id}"
     user_text = update.message.text
 
     try:
